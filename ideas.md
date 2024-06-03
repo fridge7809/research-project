@@ -13,7 +13,20 @@ Further reading:
 - [Scalable OLTP in the Cloud: What’s the BIG DEAL?](https://www.cidrdb.org/cidr2024/papers/p63-helland.pdf)
 
 - [Evolution of Financial Exchange Architectures](https://www.infoq.com/presentations/financial-exchange-architecture/)
-# ChatGPT ideas
+
+## Implementing some kind of algo as fast as possible
+
+- Pick a baseline algorithm implementation and API
+
+- Benchmark its performance, analyse the results, create hypothesis about where improvements could be found using theory from functioncal programming, stack/heap etc, profile the memory usages/allocations etc
+
+- Research and document optimizations, create new iteration that implement optimizations, benchmark it again and compare performance to prior iterations in a systematic fashion
+
+Inspiration: [The Fastest .NET Dictionary](https://youtu.be/le_1yMroz80?si=hdavMNVBmI8q2OwW). Repo [here](https://github.com/matthewcrews/FastDictionaryTest)
+
+
+
+# ChatGPT ideasq
 
 Generated with ChatGPT. [Link to chat](https://chatgpt.com/share/0b4c8d35-bb0e-4851-81d1-3fedabc3d337)
 
