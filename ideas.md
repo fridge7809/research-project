@@ -53,3 +53,22 @@ Generated with ChatGPT. [Link to chat](https://chatgpt.com/share/0b4c8d35-bb0e-4
 11. **Parallel Simulation and Modeling for Scientific Computing**: Develop parallel simulation and modeling techniques for scientific computing accessible via a web API.
 
 12. **Concurrency in Financial Trading Systems**: Investigate concurrent programming techniques for financial trading systems, offering algorithmic trading services via a web API.
+
+# Mathias ideas
+**Functional programming for web development** 
+Compare functional languages for web development
+Pros/cons of using functional languages for web instead of javascript etc.
+Build a web app in a functional language. 
+
+**Using functional and imperative programming**
+Could be a comparison of the two.
+Could also look into how functional programming integrates into imperative programming (or object oriented programming).
+Build some kind of project integrating the two paradigms. 
+
+**Use Functional Reactive Programming (FRP) for real-time data visualization**
+(I haven't read much about this topic, but skatten gives an explanation that sounds quite interesting):
+Functional Reactive Programming (FRP) is a programming paradigm for working with reactive systems in a declarative way. 
+It combines the principles of functional programming with reactive programming, allowing developers to model dynamic systems that change over time. 
+FRP is particularly useful for applications that require continuous updates and real-time responsiveness, such as user interfaces, animations, and interactive simulations.
+
+
