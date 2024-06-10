@@ -26,7 +26,7 @@ Inspiration: [The Fastest .NET Dictionary](https://youtu.be/le_1yMroz80?si=hdavM
 
 
 
-# ChatGPT ideasq
+# ChatGPT ideas
 
 Generated with ChatGPT. [Link to chat](https://chatgpt.com/share/0b4c8d35-bb0e-4851-81d1-3fedabc3d337)
 
