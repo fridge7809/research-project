@@ -98,7 +98,7 @@ Generated with ChatGPT. [Link to chat](https://chatgpt.com/share/0b4c8d35-bb0e-4
 12. **Concurrency in Financial Trading Systems**: Investigate concurrent programming techniques for financial trading systems, offering algorithmic trading services via a web API.
 
 ## Some more chat ideas:
-##Scalable Web Application Architectures
+## Scalable Web Application Architectures
 Explore different architectures for building scalable web applications, focusing on the use of microservices, serverless computing, and containerization. Evaluate the performance, scalability, and maintainability of each approach.
 
 Possible Sub-topics:
@@ -106,7 +106,7 @@ Microservices vs. Monolithic Architectures: Performance and scalability comparis
 Serverless Architectures: Benefits and challenges in web development.
 Container Orchestration with Kubernetes: Implementing and managing scalable web applications.
 
-##Real-time Web Applications
+## Real-time Web Applications
 Description:
 Explore the technologies and frameworks used to build real-time web applications, such as WebSockets, Server-Sent Events (SSE), and WebRTC. Focus on use cases like live data streaming, online gaming, and collaborative tools.
 
