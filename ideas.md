@@ -50,6 +50,23 @@ Functional Reactive Programming (FRP) is a programming paradigm for working with
 It combines the principles of functional programming with reactive programming, allowing developers to model dynamic systems that change over time. 
 FRP is particularly useful for applications that require continuous updates and real-time responsiveness, such as user interfaces, animations, and interactive simulations.
 
+## Build a "bot"/app, for automatically updating node packages. (Just brainstorming everything at this point :D) 
+
+Not sure how possible this is, but it's just a thought. 
+At TV2 we use expensive developers time to go through all our repos, and update package versions when they are outdated or newer versions are available.
+I believe that it should be possible to create some kind of app or bot to do this automatically.
+Idea is to have the bot look through all packages and find those that have newer version. Then create unit tests for all code in repo (maybe ai generated??) to make sure all functionality works as intended after upgrading version. Bot then automatically updates version, if all tests pass. 
+It kind of exists [Renovate](https://docs.renovatebot.com/reading-list) but not ai powered
+
+## In addition to your weather app idea:
+Setup everything for the weather app: build the app, create pipelines (CI/CD), create dev/prod environments, test the app for some users (maybe both some developers for backend part and regular people for frontend part)
+The addition: I think that it would be awesome to be able to draw a route on a map (it could be your route for a long bicycle ride), and then be able to see the weather forecast for the entire route, calculated by taking the forecast for a city at the time you expect to be near that city on your route. (This could be our "innovative", "new", "special", "amazing" way of making the project thesis/research project "friendly")
+
+### Development/production environments (no matter which project we create)
+
+It would be super cool to set up dev and prod environments for our project. 
+Then create pipeline (github actions) to build our changes on the dev env, so we can test it there before building prod. 
+I think this would be a less important part of the project, but still a super cool flex, showing that we indeed are super cool :D
 
 
 # ChatGPT ideas
