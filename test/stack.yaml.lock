@@ -3,7 +3,21 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: Rattus-0.5.1.1@sha256:597a92eca58d73911cb80231d13fec1f74624a015570512d699a1aee34de7461,7090
+    pantry-tree:
+      sha256: a30cd4f08e8f06ab02950052e83c97a1a142bfcd8b111f4138321b2fa50c934a
+      size: 1794
+  original:
+    hackage: Rattus-0.5.1.1
+- completed:
+    hackage: QuickCheck-2.15.0.1@sha256:ff732606dd8b3f76e3cb87a26516583d183729bf540085228c82adf037aca8bf,8751
+    pantry-tree:
+      sha256: f05339cb3b9a929fcd533ce101cbf55884301e8bb446d9d528bd5794db22f936
+      size: 2437
+  original:
+    hackage: QuickCheck-2.15.0.1
 snapshots:
 - completed:
     sha256: edbd50d7e7c85c13ad5f5835ae2db92fab1e9cf05ecf85340e2622ec0a303df1
