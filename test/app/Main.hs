@@ -1,8 +1,13 @@
-{-# OPTIONS -fplugin=Rattus.Plugin #-}
+{-# OPTIONS -fplugin=AsyncRattus.Plugin #-}
+{-# OPTIONS_GHC -fplugin=AsyncRattus.Plugin #-}
+
+{-# LANGUAGE AsyncRattus #-}
+
 module Main (main) where
 
 import Rattus
 import Rattus.Stream
+import AsyncRattus
 
 incStream :: Str Int -> Str Int
 incStream (x ::: xs) = (x + 1) ::: delay (incStream (adv xs))

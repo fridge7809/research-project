@@ -18,7 +18,7 @@
 # snapshot: ./custom-snapshot.yaml
 # snapshot: https://example.com/snapshots/2024-01-01.yaml
 snapshot:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/34.yaml
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/35.yaml
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -40,11 +40,8 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
-extra-deps:
-- Rattus-0.5.1.1
-- QuickCheck-2.15.0.1
-- AsyncRattus-0.2.0.1
+extra-deps: 
+- AsyncRattus-0.2.0.1@sha256:fc6b7f956391afaf3022bf40212d905a97f458ef9f041c633429cf22a512940a,6269
 
 # Override default flag values for project packages and extra-deps
 # flags: {}
