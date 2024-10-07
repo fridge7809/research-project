@@ -1,6 +1,6 @@
-name:                test
+name:                test3
 version:             0.1.0.0
-github:              "githubuser/test"
+github:              "githubuser/test3"
 license:             BSD-3-Clause
 author:              "Author name here"
 maintainer:          "example@example.com"
@@ -17,13 +17,15 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/test#readme>
+description:         Please see the README on GitHub at <https://github.com/githubuser/test3#readme>
 
 dependencies:
 - base >= 4.7 && < 5
-- Rattus
 - QuickCheck
 - AsyncRattus
+
+extra-deps:
+- AsyncRattus-0.2.0.1@sha256:fc6b7f956391afaf3022bf40212d905a97f458ef9f041c633429cf22a512940a
 
 ghc-options:
 - -Wall
@@ -40,7 +42,7 @@ library:
   source-dirs: src
 
 executables:
-  test-exe:
+  test3-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -48,10 +50,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - test
+    - test3
 
 tests:
-  test-test:
+  test3-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -59,4 +61,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - test
+    - test3
