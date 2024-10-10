@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - QuickCheck
 - AsyncRattus
+- containers
 
 extra-deps:
 - AsyncRattus-0.2.0.1@sha256:fc6b7f956391afaf3022bf40212d905a97f458ef9f041c633429cf22a512940a

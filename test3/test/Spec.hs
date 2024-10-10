@@ -2,11 +2,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 
-{-# OPTIONS -fplugin=AsyncRattus.Plugin #-}
-
 import AsyncRattus
+import AsyncRattus.InternalPrimitives
 import AsyncRattus.Signal
 import Test.QuickCheck
+import Data.IntSet (IntSet)
+import qualified Data.IntSet as IntSet
 import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith)
 
 -- arbitrary class from quickcheck, defining a custom instance of the class to handle arbitrary generation of Sig a
@@ -26,8 +27,13 @@ instance (Arbitrary a) => Arbitrary (Sig a) where
 {- instance Arbitrary a ⇒ Arbitrary (Sig a) where
     arbitrary = do
         x <- arbitrary :: Gen a
-        xs <- arbitrary :: Gen (Sig a)
-        return $ x ::: delay xs
+        s <- getSize
+        if s > 0 then
+            return x ::: (do xs <- reSize(n-1) arbitrary)
+            return $ x ::: Delay (Singleton 0) (\_ -> xs)
+
+            else
+            return x ::: (xs ::: never)
  -}
 
 -- => type constraint, arguments must derive arbitrary typeclass
@@ -43,6 +49,7 @@ arbitrarySig n = do
     xs <- arbitrarySig (n - 1)
     return (x ::: delay xs)
 
+
 -- headache tracker
 -- quickcheck requires the signal data type to derive (implement) show (aka .toString) and arbitrary
 -- show is esentially an interface (typeclass) that defines functions the data type must implement (derive)
@@ -57,10 +64,14 @@ instance Show a => Show (Sig a) where
 
 -- 30 should probably not be hard coded but it is for now
 instance Eq a => Eq (Sig a) where
-    Eq sig1 sig2 = takeSig 30 sig1 == takeSig 30 sig2
+    (==) sig1 sig2 = takeSig 30 sig1 == takeSig 30 sig2
 
 takeSig :: Int -> Sig a -> [a]
-takeSig n sig -> ???
+takeSig 0 _ = []
+takeSig n (x ::: Delay cl f) = x : takeSig (n-1) (f (InputValue 0 ()))
+
+ints :: Sig Int
+ints = 0 ::: Delay (IntSet.singleton 0) (\_ -> ints)
 
 -- Property ideas for map. Specification for map:
 
@@ -72,15 +83,17 @@ takeSig n sig -> ???
 -- Making a signal with negative n values makes no sense, therefore Positive n
 -- This needs to be refactored to make id a user supplied function to map over the signal with
 -- => type constraint, arguments must derive typeclasses eq, arb and show
-prop_map_id :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
-prop_map_id (Positive n) sig = eqSig n (map (box id) sig) sig
+-- prop_map_id :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
+-- prop_map_id (Positive n) sig = eqSig n (map (box id) sig) sig
+
+prop_test :: Positive Int -> Sig Int -> Bool
+prop_test (Positive n) sig = sig == sig
 
 -- Property map is associative, f after g. map f sig (map g sig) == map (g . f) sig
-prop_map_associative :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
+-- prop_map_associative :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
 
 -- Property map does not change the size
-prop_map_size :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
-
+-- prop_map_size :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
 
 main :: IO ()
-main = quickCheck (prop_map_id :: Positive Int -> Sig Int -> Bool)
+main = quickCheck (prop_test (Positive 5) ints)
