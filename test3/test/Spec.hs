@@ -42,12 +42,13 @@ arbitrarySig :: Arbitrary a => Int -> Gen (Sig a)
 -- same as scala for comprehension, sugar to chain monadic calls in an imperative way
 arbitrarySig 0 = do
     x <- arbitrary
-    return (const x)
-
+    return (x ::: never)
 arbitrarySig n = do
     x <- arbitrary
-    xs <- arbitrarySig (n - 1)
-    return (x ::: delay xs)
+    xs <- arbitrarySig (n - 1) -- not evaluated yet?
+    let later = Delay (IntSet.singleton 0) (\_ -> xs)
+    return (x ::: later)
+
 
 
 -- headache tracker
@@ -64,11 +65,15 @@ instance Show a => Show (Sig a) where
 
 -- 30 should probably not be hard coded but it is for now
 instance Eq a => Eq (Sig a) where
-    (==) sig1 sig2 = takeSig 30 sig1 == takeSig 30 sig2
+    (==) sig1 sig2 = takeSigExhaustive sig1 == takeSigExhaustive sig2
 
 takeSig :: Int -> Sig a -> [a]
 takeSig 0 _ = []
 takeSig n (x ::: Delay cl f) = x : takeSig (n-1) (f (InputValue 0 ()))
+
+takeSigExhaustive :: Sig a -> [a]
+takeSigExhaustive (x ::: never) = []
+takeSigExhaustive (x ::: Delay cl f) = x : takeSigExhaustive (f (InputValue 0 ()))
 
 ints :: Sig Int
 ints = 0 ::: Delay (IntSet.singleton 0) (\_ -> ints)
@@ -96,4 +101,4 @@ prop_test (Positive n) sig = sig == sig
 -- prop_map_size :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
 
 main :: IO ()
-main = quickCheck (prop_test (Positive 5) ints)
+main = quickCheck (prop_test (Positive 5))
