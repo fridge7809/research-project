@@ -25,7 +25,10 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Main
+      Name.Generators
+      Name.Properties
+      Name.Utilities
   other-modules:
       Paths_test3
   autogen-modules:
@@ -43,11 +46,14 @@ library
 executable test3-exe
   main-is: Main.hs
   other-modules:
+      Name.Generators
+      Name.Properties
+      Name.Utilities
       Paths_test3
   autogen-modules:
       Paths_test3
   hs-source-dirs:
-      app
+      src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       AsyncRattus
