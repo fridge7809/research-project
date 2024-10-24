@@ -1,4 +1,4 @@
-# Changelog for `test3`
+# Changelog for `experiments`
 
 All notable changes to this project will be documented in this file.
 
