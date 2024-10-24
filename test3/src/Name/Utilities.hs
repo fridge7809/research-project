@@ -13,6 +13,19 @@ import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith
 
 
 
+{--
+    - Vi vil gerne lave vores version af zip, for at kunne teste stuttering. 
+    - lav function der skifter mellem at bruge clock fra det ene signal og det andet signal når vi Zipper
+    - Derefter skal vi extracte tuple værdierne for det ene signal og checke at det er en stuttering af det ene signal. 
+    - Dermed skal vi lave en "isSigAStutterofSigB" function. 
+--}
+
+
+rectwosigs :: [a] -> [b] -> Bool
+rectwosigs x::xs y::ys -> if(y == x) rectwosigs(x::xs, ys)
+
+    
+
 -- helper :: IntSet.IntSet -> a -> Sig a -> InputValue -> Sig a
 -- helper clocks x xs (InputValue clock value) =
 --   if clock `IntSet.member` clocks
