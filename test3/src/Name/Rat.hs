@@ -1,6 +1,9 @@
 {-# OPTIONS -fplugin=AsyncRattus.Plugin #-}
 {-# LANGUAGE TypeOperators #-}
 
+-- AsyncRattus code goes here. 
+-- The code is type checked by the AsyncRattus compiler plugin.
+
 module Name.Rat (
     prop_zip_zipped
 ) where

@@ -7,7 +7,8 @@ module Name.Properties (
     prop_map_id_Int,
     prop_map_id_Float,
     prop_zip_isStuttering,
-    strip
+    strip,
+    prop_zip_then_strip
 ) where
 
 import AsyncRattus.Signal
@@ -21,7 +22,7 @@ import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith
 
 strip :: Sig (Int:*Int) -> Sig Int
 strip a = do
-    let boxed = Box snd'
+    let boxed = Box fst'
     map boxed a
 
 
@@ -114,11 +115,13 @@ prop_zip_isStuttering' (x:xs) (y:ys) n
     | x == y      = prop_zip_isStuttering' (x:xs) ys 0      
     | otherwise   = prop_zip_isStuttering' xs (y:ys) (n + 1)
 
-prop_zip_then_strip :: Sig Int -> Sig Int -> [Int]
+prop_zip_then_strip :: Sig Int -> Sig Int -> Bool
 prop_zip_then_strip a b = do
         let zipped = prop_zip_zipped a b
         let stripped = strip zipped
-        takeSig 50 stripped
+        let a' = takeSigExhaustive a
+        let stripped' = takeSigExhaustive stripped
+        prop_zip_isStuttering a' stripped'
 
 
 -- prop_zip_isStutteringSig :: Sig Int -> Sig Int -> Bool

@@ -9,4 +9,4 @@ prop_sig_size_non_negative sig = sizeSig sig 0 >= 0
 
 main :: IO ()
 main = do
-    quickCheck (prop_zip_isStuttering2)
+    quickCheck (prop_zip_then_strip)

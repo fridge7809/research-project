@@ -12,5 +12,7 @@ main = do
     value2 <- generate (arbitrary :: Gen (Sig Int))
     let final = prop_zip_zipped value value2
     let stripped = strip final
-    print (show final)
-    print (show stripped)
+    putStrLn (show value)
+    putStrLn (show value2)
+    putStrLn (show final)
+    putStrLn (show stripped)
