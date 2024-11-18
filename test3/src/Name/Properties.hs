@@ -1,32 +1,37 @@
 {-# LANGUAGE TypeOperators #-}
 
-module Name.Properties (
-    prop_map_id,
+module Name.Properties
+  ( prop_map_id,
     prop_map_associative,
     prop_map_size,
     prop_map_id_Int,
     prop_map_id_Float,
     prop_zip_isStuttering,
     strip,
-    prop_zip_then_strip
-) where
+    prop_zip_then_strip,
+    prop_zip_then_strip_sig,
+  )
+where
 
-import AsyncRattus.Signal
 import AsyncRattus.InternalPrimitives
+import AsyncRattus.Signal
 import AsyncRattus.Strict
 import Name.Generators
-import Name.Utilities
 import Name.Rat
+import Name.Utilities
 import Test.QuickCheck
+import qualified Data.IntSet as IntSet
 import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith)
+import Data.Bool (Bool(True))
 
-strip :: Sig (Int:*Int) -> Sig Int
+
+strip :: Sig (Int :* Int) -> Sig Int
 strip a = do
-    let boxed = Box fst'
-    map boxed a
+  let boxed = Box fst'
+  map boxed a
 
+instance Stable Int
 
-instance Stable Int where
 -- how do we make quickcheck work for polymorphic types
 -- what are the considerations when generating clocks
 -- totally random, at least one, overlap between?
@@ -46,7 +51,7 @@ instance Stable Int where
 -- prop_map_id :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
 -- prop_map_id (Positive n) sig = eqSig n (map (box id) sig) sig
 
-prop_map_id :: Eq a => Sig a -> Bool
+prop_map_id :: (Eq a) => Sig a -> Bool
 prop_map_id sig = sig == map (box id) sig
 
 prop_map_id_Int :: Sig Int -> Bool
@@ -61,17 +66,16 @@ prop_map_id_Float = prop_map_id
 
 prop_map_associative :: Box (Int -> Int) -> Sig Int -> Bool
 prop_map_associative f sig = do
-    let composed = unbox f . unbox f
-    map f (map f sig) == map (box composed) sig
+  let composed = unbox f . unbox f
+  map f (map f sig) == map (box composed) sig
 
 -- 3.
 -- Property map does not change the size
 -- prop_map_size :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
 
-
 prop_map_size :: Box (Int -> Int) -> Sig Int -> Bool
 prop_map_size f sig =
-    sizeSig sig 0 == sizeSig (map f sig) 0
+  sizeSig sig 0 == sizeSig (map f sig) 0
 
 -- zip property ideas
 
@@ -100,32 +104,55 @@ prop_map_size f sig =
 -- either list 1 equals list 2
 -- or list 2 is a stutter of list 1, where some element stutters 0 .. n times
 
-
+-- List version of isStuttering:
 prop_zip_isStuttering :: [Int] -> [Int] -> Bool
 prop_zip_isStuttering a b
-    | length b < length a = False                 
-    | otherwise           = prop_zip_isStuttering' a b 0
-
+  | length b < length a = False
+  | otherwise = prop_zip_isStuttering' a b 0
 
 prop_zip_isStuttering' :: [Int] -> [Int] -> Int -> Bool
 prop_zip_isStuttering' _ [] _ = True
-prop_zip_isStuttering' [] (_:_) _ = False
-prop_zip_isStuttering' (x:xs) (y:ys) n
-    | n == 2      = False                                   
-    | x == y      = prop_zip_isStuttering' (x:xs) ys 0      
-    | otherwise   = prop_zip_isStuttering' xs (y:ys) (n + 1)
+prop_zip_isStuttering' [] (_ : _) _ = False
+prop_zip_isStuttering' (x : xs) (y : ys) n
+  | n == 2 = False
+  | x == y = prop_zip_isStuttering' (x : xs) ys 0
+  | otherwise = prop_zip_isStuttering' xs (y : ys) (n + 1)
 
 prop_zip_then_strip :: Sig Int -> Sig Int -> Bool
 prop_zip_then_strip a b = do
-        let zipped = prop_zip_zipped a b
-        let stripped = strip zipped
-        let a' = takeSigExhaustive a
-        let stripped' = takeSigExhaustive stripped
-        prop_zip_isStuttering a' stripped'
+  let zipped = prop_zip_zipped a b
+  let stripped = strip zipped
+  let a' = takeSigExhaustive a
+  let stripped' = takeSigExhaustive stripped
+  prop_zip_isStuttering a' stripped'
 
+-- Signal version of isStuttering (experiment):
+prop_zip_is_stuttering_sig :: Sig Int -> Sig Int -> Bool
+prop_zip_is_stuttering_sig a b = 
+    prop_zip_is_stuttering_sig' a b 0
+
+prop_zip_is_stuttering_sig' :: Sig Int -> Sig Int -> Int -> Bool
+prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (y ::: Delay cly fy) n
+
+  -- if we've advanced on the original signal (x) twice without finding a match, we know its not a stuttering
+  | n == 2 = False
+  | IntSet.null clx = False
+  | IntSet.null cly = True
+
+  -- if x and y are the same, we advance on the possible stuttering signal (y) and reset the n counter
+  | x == y = prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (fy (InputValue (pickSmallestClock cly) ())) 0
+
+  -- in case x and y doesn't match, we advance on the original signal (x) and increment the n counter. Counter keeps track of how many times we do not find a match.
+  | otherwise = prop_zip_is_stuttering_sig' (fx (InputValue (pickSmallestClock clx) ())) (y ::: Delay cly fy) (n + 1)
+
+prop_zip_then_strip_sig :: Sig Int -> Sig Int -> Bool
+prop_zip_then_strip_sig a b = do
+  let zipped = prop_zip_zipped a b
+  let stripped = strip zipped
+  prop_zip_is_stuttering_sig a stripped
 
 -- prop_zip_isStutteringSig :: Sig Int -> Sig Int -> Bool
--- prop_zip_isStutterignSig _ 
+-- prop_zip_isStutterignSig _
 
 -- filter properties
 

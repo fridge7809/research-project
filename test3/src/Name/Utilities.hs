@@ -2,7 +2,8 @@ module Name.Utilities (
     takeSig,
     takeSigExhaustive,
     sizeSig,
-    ints
+    ints,
+    pickSmallestClock
 ) where
 
 import AsyncRattus.InternalPrimitives

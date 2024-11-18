@@ -10,9 +10,11 @@ main :: IO ()
 main = do
     value <- generate (arbitrary :: Gen (Sig Int))
     value2 <- generate (arbitrary :: Gen (Sig Int))
-    let final = prop_zip_zipped value value2
-    let stripped = strip final
+    let final = prop_zip_then_strip_sig value value2
+    let tupleSig = prop_zip_zipped value value2
+    -- let stripped = strip final
     putStrLn (show value)
     putStrLn (show value2)
+    putStrLn (show tupleSig)
     putStrLn (show final)
-    putStrLn (show stripped)
+    -- putStrLn (show stripped)
