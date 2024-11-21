@@ -23,7 +23,7 @@ instance (Arbitrary a) => Arbitrary (Sig a) where
   arbitrary = arbitrarySig 3
 
 instance (Show a) => Show (Sig a) where
-  show (x ::: xs) = "Sig " ++ show (takeSigExhaustive (x ::: xs)) ++ " clocky: " ++ show (extractClock xs)
+  show (x ::: xs) = "Sig " ++ show (takeSigAndClockExhaustive (x ::: xs)) ++ " clocky: " ++ show (extractClock xs)
 
 instance (Eq a) => Eq (Sig a) where
   (==) sig1 sig2 = takeSigExhaustive sig1 == takeSigExhaustive sig2
