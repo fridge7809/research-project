@@ -84,10 +84,21 @@ prop_zip_then_strip a b = do
 
 -- Signal version of isStuttering:
 prop_zip_is_stuttering_sig :: Sig Int -> Sig Int -> Bool
-prop_zip_is_stuttering_sig a b = 
-    prop_zip_is_stuttering_sig' a b 0
+prop_zip_is_stuttering_sig (x ::: Delay clx fx) (y ::: Delay cly fy)
+  | x /= y = False
+  | IntSet.null union = True
+  | IntSet.member smallest clx && IntSet.member smallest cly =
+      prop_zip_is_stuttering_sig (fx (InputValue smallest ())) (fy (InputValue smallest ()))
+  | IntSet.member smallest clx =
+      prop_zip_is_stuttering_sig (fx (InputValue smallest ())) (y ::: Delay cly fy)
+  | otherwise =
+      prop_zip_is_stuttering_sig (x ::: Delay clx fx) (fy (InputValue smallest ()))
+  where
+    union = IntSet.union clx cly
+    smallest = IntSet.findMin union
 
-prop_zip_is_stuttering_sig' :: Sig Int -> Sig Int -> Int -> Bool
+
+{- prop_zip_is_stuttering_sig' :: Sig Int -> Sig Int -> Int -> Bool
 prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (y ::: Delay cly fy) n
 
   -- if we've advanced on the original signal (x) twice without finding a match, we know its not a stuttering
@@ -113,7 +124,7 @@ prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (y ::: Delay cly fy) n
     -- pick smallest signal in the union clock to advance on
     -- if c is in cl1 but not in cl2, advance on cl1
     -- if c is in cl2 but not in cl2, advance on cl2
-    -- if c is in both, advance on both signals
+    -- if c is in both, advance on both signals -}
 
 prop_zip_then_strip_sig :: Sig Int -> Sig Int -> Bool
 prop_zip_then_strip_sig a b = do

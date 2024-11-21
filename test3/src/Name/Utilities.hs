@@ -36,7 +36,6 @@ takeSigAndClockExhaustive (x ::: Delay cl f) =
         [(x, cl)]
     else (x, cl) : takeSigAndClockExhaustive (f (InputValue (pickSmallestClock cl) ()))
 
-
 -- size of signal
 sizeSig :: Sig a -> Int -> Int
 sizeSig (_ ::: Delay cl f) acc =

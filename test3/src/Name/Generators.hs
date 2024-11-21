@@ -12,7 +12,7 @@ where
 import AsyncRattus.InternalPrimitives
 import AsyncRattus.Signal
 import Data.Int (Int)
-import qualified Data.IntSet as IntSet
+import qualified Data.IntSet as IntSet hiding (show)
 import Name.Utilities
 import Test.QuickCheck
 import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith)
@@ -20,10 +20,10 @@ import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith
 -- Use sized to avoid infinite recursion.
 
 instance (Arbitrary a) => Arbitrary (Sig a) where
-  arbitrary = arbitrarySig 3
+  arbitrary = sized arbitrarySig
 
 instance (Show a) => Show (Sig a) where
-  show (x ::: xs) = "Sig " ++ show (takeSigAndClockExhaustive (x ::: xs)) ++ " clocky: " ++ show (extractClock xs)
+  show (x ::: xs) = "Sig: " ++ show (takeSigAndClockExhaustive (x ::: xs))
 
 instance (Eq a) => Eq (Sig a) where
   (==) sig1 sig2 = takeSigExhaustive sig1 == takeSigExhaustive sig2
