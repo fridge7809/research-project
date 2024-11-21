@@ -12,7 +12,6 @@ module Name.Properties
     stuttering
   )
 where
-
 import AsyncRattus.InternalPrimitives
 import AsyncRattus.Signal
 import Name.Generators ()
@@ -72,3 +71,18 @@ prop_is_stuttering a b = do
   let zipped = aRatZip a b
   let stripped = first zipped
   isStuttering a stripped
+
+-- Switch
+
+-- prop_is_switched :: Sig Int -> Sig Int -> Bool
+-- prop_is_switched a b =
+  -- let c = switch a b
+  -- case c is equal to a, then at some point equal to b = true
+  -- (x :: xs) x == a
+  -- case c is equal to b, then at ssome point equal to b = true
+  -- otherwise false
+
+-- eksempel
+-- xs :           1 2 3
+-- ys :               0 7 8
+-- switch xs ys : 1 2 0 7 8
