@@ -17,7 +17,7 @@ import AsyncRattus.InternalPrimitives
 import AsyncRattus.Signal
 import AsyncRattus.Strict
 import Name.Generators
-import Name.Rat
+import Name.Rat ( prop_zip_zipped )
 import Name.Utilities
 import Test.QuickCheck
 import qualified Data.IntSet as IntSet
@@ -92,18 +92,28 @@ prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (y ::: Delay cly fy) n
 
   -- if we've advanced on the original signal (x) twice without finding a match, we know its not a stuttering
   | n == 2 = False
-
+  
   -- if the original signals clock is null, it means the signal will never advance again
   | IntSet.null clx = False
+  -- sig x : 1 2 3 never
+  -- sig y : 1 1 1 never
 
   -- if the stuttering signals clock is null, it must mean that we finished going through this signal, without returning false, and thereby the signal is a stuttering
   | IntSet.null cly = True
+
 
   -- if x and y are the same, we advance on the possible stuttering signal (y) and reset the n counter
   | x == y = prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (fy (InputValue (pickSmallestClock cly) ())) 0
 
   -- in case x and y doesn't match, we advance on the original signal (x) and increment the n counter. Counter keeps track of how many times we do not find a match.
   | otherwise = prop_zip_is_stuttering_sig' (fx (InputValue (pickSmallestClock clx) ())) (y ::: Delay cly fy) (n + 1)
+
+  -- match on pickSmallestClock
+  -- case x == y, 
+    -- pick smallest signal in the union clock to advance on
+    -- if c is in cl1 but not in cl2, advance on cl1
+    -- if c is in cl2 but not in cl2, advance on cl2
+    -- if c is in both, advance on both signals
 
 prop_zip_then_strip_sig :: Sig Int -> Sig Int -> Bool
 prop_zip_then_strip_sig a b = do

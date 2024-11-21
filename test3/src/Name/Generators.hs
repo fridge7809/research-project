@@ -38,15 +38,15 @@ genList = do
 
 arbitrarySig :: (Arbitrary a) => Int -> Gen (Sig a)
 arbitrarySig n = do
-  cl <- genList
-  go n cl
+  go n
   where
-    go 0 _ = do
+    go 0 = do
       x <- arbitrary
       return (x ::: never)
-    go m cl = do
+    go m = do
       x <- arbitrary
-      xs <- go (m - 1) cl
+      cl <- genList
+      xs <- go (m - 1)
       let later = Delay (IntSet.fromList cl) (\_ -> xs)
       return (x ::: later)
 

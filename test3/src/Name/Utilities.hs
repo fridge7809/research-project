@@ -25,7 +25,7 @@ takeSig n (x ::: Delay _ f) = x : takeSig (n-1) (f (InputValue 0 ()))
 takeSigExhaustive :: Sig a -> [a]
 takeSigExhaustive (x ::: Delay cl f) =
     if IntSet.null cl then
-        []
+        [x]
     else x : takeSigExhaustive (f (InputValue (pickSmallestClock cl) ()))
 
 
