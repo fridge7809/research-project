@@ -18,8 +18,6 @@ import Name.Utilities
 import Test.QuickCheck
 import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith)
 
--- Use sized to avoid infinite recursion.
-
 instance (Arbitrary a) => Arbitrary (Sig a) where
   arbitrary = sized arbitrarySig
 
