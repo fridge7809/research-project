@@ -1,20 +1,21 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use print" #-}
 module Main (main) where
 import Test.QuickCheck
-import Name.Rat
+import Name.AsyncRat
 import Name.Generators
-import Name.Utilities
 import Name.Properties
 
 
 main :: IO ()
 main = do
-    value <- generate (arbitrary :: Gen (Sig Int))
-    value2 <- generate (arbitrary :: Gen (Sig Int))
-    let final = prop_zip_then_strip_sig value value2
-    let tupleSig = prop_zip_zipped value value2
-    -- let stripped = strip final
-    putStrLn (show value)
-    putStrLn (show value2)
-    putStrLn (show tupleSig)
-    putStrLn (show final)
-    -- putStrLn (show stripped)
+    xs <- generate (arbitrary :: Gen (Sig Int))
+    ys <- generate (arbitrary :: Gen (Sig Int))
+    let stutter = stuttering xs ys
+    let zipped = aRatZip xs ys
+    let isStuttering = prop_is_stuttering xs ys
+    putStrLn (show xs)
+    putStrLn (show ys)
+    putStrLn (show zipped)
+    putStrLn (show stutter)
+    putStrLn (show isStuttering)

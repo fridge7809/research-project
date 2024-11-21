@@ -26,9 +26,9 @@ source-repository head
 library
   exposed-modules:
       Main
+      Name.AsyncRat
       Name.Generators
       Name.Properties
-      Name.Rat
       Name.Utilities
   other-modules:
       Paths_test3
@@ -47,9 +47,9 @@ library
 executable test3-exe
   main-is: Main.hs
   other-modules:
+      Name.AsyncRat
       Name.Generators
       Name.Properties
-      Name.Rat
       Name.Utilities
       Paths_test3
   autogen-modules:

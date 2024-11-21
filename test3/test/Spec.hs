@@ -1,7 +1,6 @@
 import Test.QuickCheck
-import Name.Properties
-
+import Name.Properties (prop_is_stuttering)
 
 main :: IO ()
 main = do
-    quickCheck prop_zip_then_strip_sig
+    quickCheck prop_is_stuttering

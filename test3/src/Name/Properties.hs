@@ -1,4 +1,6 @@
-{-# LANGUAGE TypeOperators #-}
+
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use map once" #-}
 
 module Name.Properties
   ( prop_map_id,
@@ -6,33 +8,19 @@ module Name.Properties
     prop_map_size,
     prop_map_id_Int,
     prop_map_id_Float,
-    prop_zip_isStuttering,
-    strip,
-    prop_zip_then_strip,
-    prop_zip_then_strip_sig,
+    prop_is_stuttering,
+    stuttering
   )
 where
 
 import AsyncRattus.InternalPrimitives
 import AsyncRattus.Signal
-import AsyncRattus.Strict
-import Name.Generators
-import Name.Rat ( prop_zip_zipped )
+import Name.Generators ()
 import Name.Utilities
-import Test.QuickCheck
 import qualified Data.IntSet as IntSet
 import Prelude hiding (const, filter, getLine, map, null, putStrLn, zip, zipWith)
-import Data.Bool (Bool(True))
+import Name.AsyncRat (aRatZip)
 
-
-strip :: Sig (Int :* Int) -> Sig Int
-strip a = do
-  let boxed = Box fst'
-  map boxed a
-
-instance Stable Int
-
--- 1.
 prop_map_id :: (Eq a) => Sig a -> Bool
 prop_map_id sig = sig == map (box id) sig
 
@@ -42,92 +30,45 @@ prop_map_id_Int = prop_map_id
 prop_map_id_Float :: Sig Float -> Bool
 prop_map_id_Float = prop_map_id
 
--- 2.
--- Property map is associative, f after g. map f sig (map g sig) == map (g . f) sig
--- prop_map_associative :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
-
 prop_map_associative :: Box (Int -> Int) -> Sig Int -> Bool
 prop_map_associative f sig = do
   let composed = unbox f . unbox f
   map f (map f sig) == map (box composed) sig
 
--- 3.
--- Property map does not change the size
--- prop_map_size :: (Eq a, Arbitrary a, Show a) => Positive Int -> Sig a -> Bool
-
 prop_map_size :: Box (Int -> Int) -> Sig Int -> Bool
 prop_map_size f sig =
   sizeSig sig 0 == sizeSig (map f sig) 0
 
-
--- List version of isStuttering:
-prop_zip_isStuttering :: [Int] -> [Int] -> Bool
-prop_zip_isStuttering a b
-  | length b < length a = False
-  | otherwise = prop_zip_isStuttering' a b 0
-
-prop_zip_isStuttering' :: [Int] -> [Int] -> Int -> Bool
-prop_zip_isStuttering' _ [] _ = True
-prop_zip_isStuttering' [] (_ : _) _ = False
-prop_zip_isStuttering' (x : xs) (y : ys) n
-  | n == 2 = False
-  | x == y = prop_zip_isStuttering' (x : xs) ys 0
-  | otherwise = prop_zip_isStuttering' xs (y : ys) (n + 1)
-
-prop_zip_then_strip :: Sig Int -> Sig Int -> Bool
-prop_zip_then_strip a b = do
-  let zipped = prop_zip_zipped a b
-  let stripped = strip zipped
-  let a' = takeSigExhaustive a
-  let stripped' = takeSigExhaustive stripped
-  prop_zip_isStuttering a' stripped'
-
--- Signal version of isStuttering:
-prop_zip_is_stuttering_sig :: Sig Int -> Sig Int -> Bool
-prop_zip_is_stuttering_sig (x ::: Delay clx fx) (y ::: Delay cly fy)
+isStuttering :: Sig Int -> Sig Int -> Bool
+isStuttering (x ::: Delay clx fx) (y ::: Delay cly fy)
   | x /= y = False
   | IntSet.null union = True
   | IntSet.member smallest clx && IntSet.member smallest cly =
-      prop_zip_is_stuttering_sig (fx (InputValue smallest ())) (fy (InputValue smallest ()))
+      isStuttering (fx (InputValue smallest ())) (fy (InputValue smallest ()))
   | IntSet.member smallest clx =
-      prop_zip_is_stuttering_sig (fx (InputValue smallest ())) (y ::: Delay cly fy)
+      isStuttering (fx (InputValue smallest ())) (y ::: Delay cly fy)
   | otherwise =
-      prop_zip_is_stuttering_sig (x ::: Delay clx fx) (fy (InputValue smallest ()))
+      isStuttering (x ::: Delay clx fx) (fy (InputValue smallest ()))
   where
     union = IntSet.union clx cly
     smallest = IntSet.findMin union
 
+stuttering :: Sig Int -> Sig Int -> [Int]
+stuttering (x ::: Delay clx fx) (y ::: Delay cly fy)
+  | x /= y = []
+  | IntSet.null union = []
+  | IntSet.member smallest clx && IntSet.member smallest cly =
+      x : stuttering (fx (InputValue smallest ())) (fy (InputValue smallest ()))
+  | IntSet.member smallest clx =
+      x : stuttering (fx (InputValue smallest ())) (y ::: Delay cly fy)
+  | otherwise =
+      y : stuttering (x ::: Delay clx fx) (fy (InputValue smallest ()))
+  where
+    union = IntSet.union clx cly
+    smallest = IntSet.findMin union
 
-{- prop_zip_is_stuttering_sig' :: Sig Int -> Sig Int -> Int -> Bool
-prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (y ::: Delay cly fy) n
-
-  -- if we've advanced on the original signal (x) twice without finding a match, we know its not a stuttering
-  | n == 2 = False
-  
-  -- if the original signals clock is null, it means the signal will never advance again
-  | IntSet.null clx = False
-  -- sig x : 1 2 3 never
-  -- sig y : 1 1 1 never
-
-  -- if the stuttering signals clock is null, it must mean that we finished going through this signal, without returning false, and thereby the signal is a stuttering
-  | IntSet.null cly = True
-
-
-  -- if x and y are the same, we advance on the possible stuttering signal (y) and reset the n counter
-  | x == y = prop_zip_is_stuttering_sig' (x ::: Delay clx fx) (fy (InputValue (pickSmallestClock cly) ())) 0
-
-  -- in case x and y doesn't match, we advance on the original signal (x) and increment the n counter. Counter keeps track of how many times we do not find a match.
-  | otherwise = prop_zip_is_stuttering_sig' (fx (InputValue (pickSmallestClock clx) ())) (y ::: Delay cly fy) (n + 1)
-
-  -- match on pickSmallestClock
-  -- case x == y, 
-    -- pick smallest signal in the union clock to advance on
-    -- if c is in cl1 but not in cl2, advance on cl1
-    -- if c is in cl2 but not in cl2, advance on cl2
-    -- if c is in both, advance on both signals -}
-
-prop_zip_then_strip_sig :: Sig Int -> Sig Int -> Bool
-prop_zip_then_strip_sig a b = do
-  let zipped = prop_zip_zipped a b
-  let stripped = strip zipped
-  prop_zip_is_stuttering_sig a stripped
+prop_is_stuttering :: Sig Int -> Sig Int -> Bool
+prop_is_stuttering a b = do
+  let zipped = aRatZip a b
+  let stripped = first zipped
+  isStuttering a stripped
